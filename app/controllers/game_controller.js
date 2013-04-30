@@ -80,7 +80,6 @@ var GameController = function (io) {
                         } else {
                             namespace = io.of("/games/"+game.id());
                             namespace.emit("move", {"cell":req.body.cell, "symbol":req.body.symbol});
-
                             res.send("OK", 200);
                         }
                     });

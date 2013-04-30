@@ -2,7 +2,8 @@
     var main = function () {
         var gameID = window.location.pathname.match(/\/games\/(.*)/)[1],
             socket = io.connect("/games/"+gameID),
-            myTurn = true;
+            mySymbol = null,
+            myTurn = false;
 
         // load the current state of the board
         $.getJSON("/games/"+gameID+".json", function (game) {
@@ -14,14 +15,13 @@
             }
         });
 
-        socket.on("connect", function () {
-            console.log("connected!");
-        });
-
         socket.on("status", function (data) {
             if (data.status === "waiting") {
+                mySymbol = "X";
                 $(".status").html("<p>waiting for opponent</p>");
             } else if (data.status === "playing") {
+                mySymbol = mySymbol || "O";
+                myTurn = (mySymbol === "X");
                 $(".status").html("<p>found opponent</p>");
             } else if (data.status === "viewable") {
                 $(".status").html("<p>You are viewing this game</p>");
@@ -30,22 +30,24 @@
 
         socket.on("move", function (data) {
             $("#c"+data.cell).text(data.symbol);
+            if (mySymbol !== null && data.symbol !== mySymbol) {
+                myTurn = true;
+            } else {
+                myTurn = false;
+            }
+            console.log("myTurn: " + myTurn);
         });
 
         $("h1 span").html(gameID);
 
         $(".cell").each(function (index, elt) {
             $(this).click(function () {
-                var sym = "X";
                 if (myTurn && $("#c"+index).html() === "&nbsp;") {
                     // post the move
                     $.ajax({
                         url: "/games/"+gameID,
                         type: "PUT",
-                        data: "cell="+index+"&symbol="+sym,
-                        success: function (data) {
-                            $("#c"+index).text(sym);
-                        }
+                        data: "cell="+index+"&symbol="+mySymbol,
                     });
                 }
             });
