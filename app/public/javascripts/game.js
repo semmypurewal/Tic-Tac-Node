@@ -4,6 +4,17 @@
             socket = io.connect("/games/"+gameID),
             myTurn = true;
 
+        // load the current state of the board
+        $.getJSON("/games/"+gameID+".json", function (game) {
+            var i;
+            for (i = 0; i < game.board.length; ++i) {
+                if (game.board[i] !== "_") {
+                    $("#c"+i).text(game.board[i]);
+                }
+            }
+        });
+
+
         socket.on("connect", function () {
             console.log("connected!");
         });
@@ -22,13 +33,15 @@
 
         $(".cell").each(function (index, elt) {
             $(this).click(function () {
+                var sym = "X";
                 if (myTurn) {
                     // post the move
                     $.ajax({
                         url: "/games/"+gameID,
                         type: "PUT",
-                        data: "cell="+index+"&symbol=X",
+                        data: "cell="+index+"&symbol="+sym,
                         success: function (data) {
+                            $("#c"+index).text(sym);
                             console.log("put was successful: " + data);
                         }
                     });
