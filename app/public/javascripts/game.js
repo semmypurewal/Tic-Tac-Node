@@ -27,7 +27,7 @@
                     $.ajax({
                         url: "/games/"+gameID,
                         type: "PUT",
-                        data: "cell="+index,
+                        data: "cell="+index+"&symbol=X",
                         success: function (data) {
                             console.log("put was successful: " + data);
                         }

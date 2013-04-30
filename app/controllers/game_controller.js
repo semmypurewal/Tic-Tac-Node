@@ -51,21 +51,35 @@ var GameController = function (io) {
             } else if (game === null) {
                 res.send("Game Not Found", 404);
             } else {
-                res.sendfile("public/game.html");
+                if (req.params.format === "json") {
+                    res.json(game.toJSON());
+                } else {
+                    res.sendfile("public/game.html");
+                }
             }
         });
     };
 
     // this needs to be authenticated in some way
     this.update = function (req, res) {
-        console.log(req.body.cell);
         Game.find({"gameID":req.params.id}, function (err, game) {
             if (err !== null) {
                 res.send("Internal Server Error", 500);
             } else if (game === null){
                 res.send("Game Not Found", 404);
             } else {
-                res.send("OK", 200);
+                if (game.board()[req.body.cell] !== "_") {
+                    throw new Error("cell was already set!");
+                } else {
+                    game.board()[req.body.cell] = req.body.symbol;
+                    game.save(function (err, result) {
+                        if (err !== null) {
+                            res.send(500);
+                        } else {
+                            res.send("OK", 200);
+                        }
+                    });
+                }
             }
         });
     };

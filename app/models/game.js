@@ -24,6 +24,14 @@ Game = function (attrs) {
         }
     }
 
+    this.toJSON = function () {
+        return {
+            "gameID":this.id(),
+            "status":this.status(),
+            "board":this.board()
+        }
+    };
+
     this.applyMove = function (sym, row, col) {
         if (row < 0 || row > 2 || col < 0 || col > 0) {
             throw new RangeError("row and col must be between 0 and 2 inclusive");

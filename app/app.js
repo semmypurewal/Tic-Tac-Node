@@ -10,6 +10,6 @@ app.configure(function () {
 });
 
 app.post("/games", gameController.create);
-app.get("/games/:id", gameController.show);
+app.get("/games/:id.:format?", gameController.show);
 app.put("/games/:id", gameController.update);
 app.del("/games/:id", gameController.destroy);
