@@ -62,6 +62,7 @@ var GameController = function (io) {
 
     // this needs to be authenticated in some way
     this.update = function (req, res) {
+        console.log("HEY PUT");
         Game.find({"gameID":req.params.id}, function (err, game) {
             if (err !== null) {
                 res.send("Internal Server Error", 500);
@@ -71,18 +72,22 @@ var GameController = function (io) {
                 if (game.board()[req.body.cell] !== "_") {
                     throw new Error("cell was already set!");
                 } else {
-                    game.board()[req.body.cell] = req.body.symbol;
-                    game.save(function (err, result) {
-                        var namespace;
-
-                        if (err !== null) {
-                            res.send(500);
-                        } else {
-                            namespace = io.of("/games/"+game.id());
-                            namespace.emit("move", {"cell":req.body.cell, "symbol":req.body.symbol});
-                            res.send("OK", 200);
-                        }
-                    });
+                    if (game.status() === "playing") {
+                        game.applyMove(req.body.symbol, Math.floor(req.body.cell/3), req.body.cell%3);
+                        
+                        game.save(function (err, result) {
+                            var namespace = io.of("/games/"+game.id());
+                            if (err !== null) {
+                                res.send(500);
+                            } else {
+                                namespace.emit("move", {"cell":req.body.cell, "symbol":req.body.symbol});
+                                if (game.status().indexOf("Wins") > -1) {
+                                    namespace.emit("status", {"status":game.status()});
+                                }
+                                res.send("OK", 200);
+                            }
+                        });
+                    }
                 }
             }
         });

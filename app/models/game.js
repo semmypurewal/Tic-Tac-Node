@@ -33,12 +33,35 @@ Game = function (attrs) {
     };
 
     this.applyMove = function (sym, row, col) {
-        if (row < 0 || row > 2 || col < 0 || col > 0) {
+        var i;
+
+        if (row < 0 || row > 2 || col < 0 || col > 2) {
+            console.log(row + " " + col);
             throw new RangeError("row and col must be between 0 and 2 inclusive");
         } else if (sym !== "X" && sym !== "O") {
             throw new TypeError("sym must be X or O");
         } else {
             board[row*3+col] = sym;
+
+            for (i = 0; i < 3; ++i) {
+                if (board[i] === board[i+3] && board[i+3] === board[i+6] &&
+                    board[i] !== "_") {
+                    this.status(board[i] + " Wins");
+                } else if (board[i*3] === board[i*3+1] && 
+                           board[i*3+1] === board[i*3+2] &&
+                           board[i*3] !== "_") {
+                    this.status(board[i*3] + " Wins");
+                }
+            }
+            if (((board[0] === board[4] && board[4] === board[8]) ||
+                (board[2] === board[4] && board[4] === board[6])) &&
+                board[4] !== "_") {
+                this.status(board[4] + " Wins");
+            }
+            if (board.indexOf("_") === -1 && this.status() === "playing") {
+                this.status("Cat Wins");
+            }
+            console.log(this.status());
         }
     };
 

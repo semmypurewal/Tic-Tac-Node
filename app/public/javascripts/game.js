@@ -13,6 +13,7 @@
                     $("#c"+i).text(game.board[i]);
                 }
             }
+            $(".status").html("<p>"+game.status+"</p>");
         });
 
         socket.on("status", function (data) {
@@ -25,6 +26,8 @@
                 $(".status").html("<p>found opponent</p>");
             } else if (data.status === "viewable") {
                 $(".status").html("<p>You are viewing this game</p>");
+            } else if (data.status.indexOf("Wins") > -1) {
+                $(".status").html("<p>"+data.status+"</p>");
             }
         });
 
