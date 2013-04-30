@@ -14,7 +14,6 @@
             }
         });
 
-
         socket.on("connect", function () {
             console.log("connected!");
         });
@@ -34,7 +33,7 @@
         $(".cell").each(function (index, elt) {
             $(this).click(function () {
                 var sym = "X";
-                if (myTurn) {
+                if (myTurn && $("#c"+index).html() === "&nbsp;") {
                     // post the move
                     $.ajax({
                         url: "/games/"+gameID,
@@ -42,7 +41,6 @@
                         data: "cell="+index+"&symbol="+sym,
                         success: function (data) {
                             $("#c"+index).text(sym);
-                            console.log("put was successful: " + data);
                         }
                     });
                 }
@@ -52,4 +50,3 @@
 
     $(document).ready(main);
 }());
-
