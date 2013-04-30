@@ -44,7 +44,7 @@ Game = function (attrs) {
 
     this.board = function () {
         return board;
-    }
+    };
 
     this.status = function (newStatus) {
         if (newStatus === undefined) {
