@@ -41,8 +41,6 @@
             console.log("myTurn: " + myTurn);
         });
 
-        $("h1 span").html(gameID);
-
         $(".cell").each(function (index, elt) {
             $(this).click(function () {
                 if (myTurn && $("#c"+index).html() === "&nbsp;") {

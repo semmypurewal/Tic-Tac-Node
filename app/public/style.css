@@ -1,5 +1,19 @@
 body {
     background: #cff;
+    font-family: 'Ubuntu', sans-serif;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+}
+
+.content {
+    text-align: center;
+}
+
+.content table {
+    margin: 100px auto;
 }
 
 .cell {
