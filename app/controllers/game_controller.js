@@ -1,5 +1,6 @@
-var redis = require("redis").createClient()
+var redis = require("redis").createClient(),
     id = require("../helpers/id.js")(),
+    Game = require("../models/game.js"),
     GameController;
 
 var GameController = function (io) {
@@ -9,46 +10,64 @@ var GameController = function (io) {
     }
 
     this.create = function (req, res) {
-        // if there's an open game, let this
-        // user join the game, else
-        // create the namespace for the game
-        // and set to waiting mode
+        var game = new Game();
 
         // create a new id
-        var gameID = id.next(), 
-            response = { "game": gameID };
+        var gameID = game.id(),
+            namespace;
 
-        // put the id in redis as a string
-        redis.set("game:"+gameID, "welcome to game " + gameID);
-        
-        // create a socket io namespace for this game
-        io.of("/"+gameID)
-          .on("connection", function (socket) {
-              console.log("someone connected");
-          });
+        // create the namespace
+        namespace = io.of("/games/"+gameID);
 
-        res.json(response);
+        // set up the connection behavior for clients
+        namespace.on("connection", function (socket) {
+            if (game.status() === "open") {
+                game.status("waiting");
+                game.save(function (err, response) {
+                    namespace.emit("status", { "status":"waiting" });
+                });
+            } else if (game.status() === "waiting") {
+                game.status("playing");
+                game.save(function (err, response) {
+                    namespace.emit("status", { "status":"playing" });
+                });
+            } else if (game.status() === "playing") {
+                // send this only to the connecting client
+                socket.emit("status", { "status":"viewable" });
+            }
+        });
+
+        game.save(function (err, response) { 
+            res.json({ "gameID":game.id() });
+        });
     };
 
     this.show = function (req, res) {
-        // the behavior is different depending on if the visitor is
-        // viewing or playing
+        var game;
 
-        redis.get("game:"+req.params.id, function (err, gameString) {
+        game = Game.find({"gameID":req.params.id}, function (err, game) {
             if (err !== null) {
                 res.send("Internal Server Error", 500);
-            } else if (gameString === null) {
+            } else if (game === null) {
                 res.send("Game Not Found", 404);
             } else {
-                console.log(gameString);
-                res.send(gameString);
+                res.sendfile("public/game.html");
             }
         });
     };
 
+    // this needs to be authenticated in some way
     this.update = function (req, res) {
-        // send the latest move to all listeners
-        res.send(200);
+        console.log(req.body.cell);
+        Game.find({"gameID":req.params.id}, function (err, game) {
+            if (err !== null) {
+                res.send("Internal Server Error", 500);
+            } else if (game === null){
+                res.send("Game Not Found", 404);
+            } else {
+                res.send("OK", 200);
+            }
+        });
     };
 
     this.destroy = function (req, res) {

@@ -1,10 +1,10 @@
 (function () {
     var main = function () {
-        $.post("/games", {}, function (response) {
-            window.location = "/games/"+response.game;
+        $("#play").click(function () {
+            $.post("/games", {}, function (response) {
+                window.location = "/games/"+response.gameID;
+            });
         });
-
-        console.log("hello world!");
     };
 
     $(document).ready(main);

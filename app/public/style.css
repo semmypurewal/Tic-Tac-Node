@@ -1,0 +1,45 @@
+body {
+    background: #cff;
+}
+
+.cell {
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+}
+
+#c0 {
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+#c1 {
+    border-bottom: 2px solid black;
+}
+
+#c2 {
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+#c3 {
+    border-right: 2px solid black;
+}
+
+#c5 {
+    border-left: 2px solid black;
+}
+
+#c6 {
+    border-right: 2px solid black;
+    border-top: 2px solid black;
+}
+
+#c7 {
+    border-top: 2px solid black;
+}
+
+#c8 {
+    border-left: 2px solid black;
+    border-top: 2px solid black;
+}
