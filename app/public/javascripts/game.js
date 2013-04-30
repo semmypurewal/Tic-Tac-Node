@@ -28,6 +28,10 @@
             }
         });
 
+        socket.on("move", function (data) {
+            $("#c"+data.cell).text(data.symbol);
+        });
+
         $("h1 span").html(gameID);
 
         $(".cell").each(function (index, elt) {

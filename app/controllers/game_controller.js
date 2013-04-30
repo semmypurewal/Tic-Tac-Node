@@ -73,9 +73,14 @@ var GameController = function (io) {
                 } else {
                     game.board()[req.body.cell] = req.body.symbol;
                     game.save(function (err, result) {
+                        var namespace;
+
                         if (err !== null) {
                             res.send(500);
                         } else {
+                            namespace = io.of("/games/"+game.id());
+                            namespace.emit("move", {"cell":req.body.cell, "symbol":req.body.symbol});
+
                             res.send("OK", 200);
                         }
                     });
