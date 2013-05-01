@@ -1,5 +1,5 @@
 body {
-    background: #cff;
+    background: #eff;
     font-family: 'Ubuntu', sans-serif;
     margin: auto;
 }
@@ -13,10 +13,13 @@ header {
 }
 
 .content table {
+
     margin: 100px auto;
 }
 
 .cell {
+    padding: 0;
+    margin: 0;
     width: 120px;
     height: 120px;
     cursor: pointer;

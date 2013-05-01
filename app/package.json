@@ -1,17 +1,16 @@
 {
     "name": "TicTacNode",
-
     "description": "Real-time TicTacToe for the Asheville Coders League",
-
     "dependencies": {
-        "express":"3.2.x",
-        "redis":"0.8.x",
-        "socket.io":"0.9.x"
+        "express": "3.2.x",
+        "redis": "0.8.x",
+        "socket.io": "0.9.x"
     },
-
     "devDependencies": {
-        "grunt":"0.4.x",
-        "jshint":"1.1.x",
-        "mocha":"1.9.x"
-    }
+        "grunt": "0.4.x",
+        "jshint": "1.1.x",
+        "mocha": "1.9.x",
+        "grunt-contrib-jshint": "0.4.x",
+        "grunt-simple-mocha": "0.4.x"
+  }
 }

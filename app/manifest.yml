@@ -1,0 +1,14 @@
+--- 
+applications: 
+- runtime: node08
+  path: .
+  memory: 64M
+  name: tictacnode
+  framework: node
+  url: tictacnode.${target-base}
+  instances: 1
+  services: 
+    tictacnode: 
+      version: "2.6"
+      vendor: redis
+      tier: free

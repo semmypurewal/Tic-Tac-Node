@@ -24,14 +24,23 @@ Game = function (attrs) {
         }
     }
 
+    /**
+     * Return a JSON representation of this game
+     */
     this.toJSON = function () {
         return {
             "gameID":this.id(),
             "status":this.status(),
             "board":this.board()
-        }
+        };
     };
 
+
+    /**
+     * Insert a symbol into a specified row and columbn
+     * Throws a RangeError if the row or col is out of bounds
+     * Tests for a win and updates status appropriately
+     */
     this.applyMove = function (sym, row, col) {
         var i;
 
@@ -65,10 +74,17 @@ Game = function (attrs) {
         }
     };
 
+    /**
+     * Return the board array
+     */
     this.board = function () {
         return board;
     };
 
+
+    /**
+     * Getter/Setter for status attribute
+     */
     this.status = function (newStatus) {
         if (newStatus === undefined) {
             return status;
@@ -92,10 +108,13 @@ Game = function (attrs) {
 };
 
 Game.find = function (query, callback) {
-    redis.get("game:"+query.gameID, function (err, game) {
-        if (game !== null) {
-            var attrs = JSON.parse(game);
-            var game = new Game(attrs);
+    redis.get("game:"+query.gameID, function (err, gameJSON) {
+        var game;
+        if (gameJSON !== null) {
+            var attrs = JSON.parse(gameJSON);
+            game = new Game(attrs);
+        } else {
+            game = null;
         }
         callback(err, game);
     });

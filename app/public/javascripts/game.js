@@ -2,6 +2,7 @@
     var main = function () {
         var gameID = window.location.pathname.match(/\/games\/(.*)/)[1],
             socket = io.connect("/games/"+gameID),
+            timeout = null,
             mySymbol = null,
             myTurn = false;
 
@@ -19,11 +20,18 @@
         socket.on("status", function (data) {
             if (data.status === "waiting") {
                 mySymbol = "X";
-                $(".status").html("<p>waiting for opponent</p>");
+                $(".status").html("<p>waiting for someone to join...</p>");
             } else if (data.status === "playing") {
                 mySymbol = mySymbol || "O";
                 myTurn = (mySymbol === "X");
-                $(".status").html("<p>found opponent</p>");
+                $(".status").html("<p>someone joined!</p>");
+                timeout = setTimeout(function () {
+                    if (mySymbol === "X") {
+                        $(".status").html("<p>It's your turn!</p>");
+                    } else {
+                        $(".status").html("<p>Waiting for opponent's move...</p>");                                     
+                    }
+                }, 3000);
             } else if (data.status === "viewable") {
                 $(".status").html("<p>You are viewing this game</p>");
             } else if (data.status.indexOf("Wins") > -1) {
@@ -32,13 +40,17 @@
         });
 
         socket.on("move", function (data) {
+            clearTimeout(timeout);
             $("#c"+data.cell).text(data.symbol);
             if (mySymbol !== null && data.symbol !== mySymbol) {
+                $(".status").html("<p>It's your turn!</p>");
                 myTurn = true;
+            } else if (mySymbol !== null && data.symbol === mySymbol) {
+                $(".status").html("<p>Waiting for opponent's move...</p>");                
+                myTurn = false;
             } else {
                 myTurn = false;
             }
-            console.log("myTurn: " + myTurn);
         });
 
         $(".cell").each(function (index, elt) {

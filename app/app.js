@@ -4,6 +4,13 @@ var express = require("express"),
     io = require("socket.io").listen(server),
     gameController = require("./controllers/game_controller.js")(io);
 
+io.set("transports", [
+    "flashsocket",
+    "htmlfile",
+    "xhr-polling",
+    "jsonp-polling"
+]);
+
 app.configure(function () {
     app.use(express.static("public"));
     app.use(express.bodyParser());

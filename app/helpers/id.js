@@ -14,9 +14,9 @@ var id = function () {
     this.next = function () {
         var now = new Date(),
             num = Math.floor(Math.random()*10000000000000) + now.getTime();
-        return parseInt(num).toString(31);
-    }
-}
+        return parseInt(num, 10).toString(31);
+    };
+};
 
 
 module.exports = id;
