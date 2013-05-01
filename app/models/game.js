@@ -84,6 +84,9 @@ Game = function (attrs) {
 
     /**
      * Getter/Setter for status attribute
+     * setter returns this object for chaining
+     * setter sets the status to the new status
+     * TODO: Check for valid status when updating status
      */
     this.status = function (newStatus) {
         if (newStatus === undefined) {
@@ -94,10 +97,21 @@ Game = function (attrs) {
         }
     };
 
+    /**
+     * Getter for gameID attribute
+     */
     this.id = function () {
         return gameID;
     };
 
+    /**
+     * alias for gameID
+     */
+    this.gameID = this.id;
+
+    /**
+     * Save game object to redis
+     */
     this.save = function (callback) {
         var jsonObj = {};
         jsonObj.gameID = this.id();
@@ -107,6 +121,11 @@ Game = function (attrs) {
     };
 };
 
+/**
+ * Find game based on a query
+ * right now it searches only by gameID
+ * TODO: allow it to search by multiple things
+ */
 Game.find = function (query, callback) {
     redis.get("game:"+query.gameID, function (err, gameJSON) {
         var game;

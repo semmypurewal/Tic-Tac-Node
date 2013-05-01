@@ -9,6 +9,11 @@ var GameController = function (io) {
         return result;
     }
 
+    /**
+     * create a new game
+     * set up socket.io connection behavior
+     * save game to redis
+     */
     this.create = function (req, res) {
         var game = new Game();
 
@@ -42,6 +47,10 @@ var GameController = function (io) {
         });
     };
 
+    /**
+     * return an html or json representation of the game
+     * defaults to html, returns json only if .json is specified
+     */
     this.show = function (req, res) {
         var game;
 
@@ -60,39 +69,40 @@ var GameController = function (io) {
         });
     };
 
-    // this needs to be authenticated in some way
+    /**
+     * Update the game when a move is made
+     */
     this.update = function (req, res) {
-        console.log("HEY PUT");
         Game.find({"gameID":req.params.id}, function (err, game) {
             if (err !== null) {
                 res.send("Internal Server Error", 500);
             } else if (game === null){
                 res.send("Game Not Found", 404);
             } else {
-                if (game.board()[req.body.cell] !== "_") {
-                    throw new Error("cell was already set!");
-                } else {
-                    if (game.status() === "playing") {
-                        game.applyMove(req.body.symbol, Math.floor(req.body.cell/3), req.body.cell%3);
-                        
-                        game.save(function (err, result) {
-                            var namespace = io.of("/games/"+game.id());
-                            if (err !== null) {
-                                res.send(500);
-                            } else {
-                                namespace.emit("move", {"cell":req.body.cell, "symbol":req.body.symbol});
-                                if (game.status().indexOf("Wins") > -1) {
-                                    namespace.emit("status", {"status":game.status()});
-                                }
-                                res.send("OK", 200);
+                if (game.status() === "playing") {
+                    game.applyMove(req.body.symbol, Math.floor(req.body.cell/3), req.body.cell%3);
+                    
+                    game.save(function (err, result) {
+                        var namespace = io.of("/games/"+game.id());
+                        if (err !== null) {
+                            res.send(500);
+                        } else {
+                            namespace.emit("move", {"cell":req.body.cell, "symbol":req.body.symbol});
+                            if (game.status().indexOf("Wins") > -1) {
+                                namespace.emit("status", {"status":game.status()});
                             }
-                        });
-                    }
+                            res.send("OK", 200);
+                        }
+                    });
                 }
             }
         });
     };
 
+    /**
+     * Delete the game
+     * TODO: make this work
+     */
     this.destroy = function (req, res) {
         // delete this game
         res.send(200);
