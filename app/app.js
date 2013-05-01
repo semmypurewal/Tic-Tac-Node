@@ -4,6 +4,8 @@ var express = require("express"),
     io = require("socket.io").listen(server),
     gameController = require("./controllers/game_controller.js")(io);
 
+// This is temporary for CloudFoundry deployment
+// since CloudFoundry doesn't support web sockets
 io.set("transports", [
     "flashsocket",
     "htmlfile",
